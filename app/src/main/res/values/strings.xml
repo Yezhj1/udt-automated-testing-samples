@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Wetest Demo</string>
+    <!-- Strings related to login -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="login_name">LOGIN</string>
+    <string name="select_name">SELECT</string>
+    <string name="check_name">CHECK</string>
+    <string name="login_tips">SIGNIN</string>
+</resources>

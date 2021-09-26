@@ -1,0 +1,9 @@
+*.apk
+build/
+.idea/
+.gradle/
+local.properties
+*.iml
+app/debug/
+app/release/
+app/proguardMapping.txt

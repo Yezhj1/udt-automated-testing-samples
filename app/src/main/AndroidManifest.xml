@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.tencent.wetestdemo">
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_wetest_logo"
+            android:label="@string/app_name"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.Wetestdemoapp">
+        <activity
+                android:name=".LoginActivity"
+                android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".ListActivity"
+                android:label="@string/select_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".SelectActivity"
+                android:label="@string/check_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
