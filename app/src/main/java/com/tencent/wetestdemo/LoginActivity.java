@@ -4,12 +4,12 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class LoginActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
 
+public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,5 +34,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), ListActivity.class));
             }
         });
+
+        TestLoopHelper.startTest(this, getIntent());
     }
 }
