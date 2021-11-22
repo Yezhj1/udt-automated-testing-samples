@@ -7,4 +7,6 @@
     <string name="select_name">SELECT</string>
     <string name="check_name">CHECK</string>
     <string name="login_tips">SIGNIN</string>
+    <string name="game_loop_name">GAMELOOP</string>
+    <string name="current_scenario">GAME SCENARIO: %1$d</string>
 </resources>

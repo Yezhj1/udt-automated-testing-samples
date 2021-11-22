@@ -34,7 +34,5 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), ListActivity.class));
             }
         });
-
-        TestLoopHelper.startTest(this, getIntent());
     }
 }

@@ -12,7 +12,7 @@
             android:theme="@style/Theme.Wetestdemoapp">
         <meta-data
             android:name="com.google.test.loops"
-            android:value="1,2,3,4,5" />
+            android:value="15" />
         <meta-data
             android:name="com.google.test.loops.player_experience"
             android:value="3,4" />
@@ -25,11 +25,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.google.intent.action.TEST_LOOP"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="application/javascript"/>
             </intent-filter>
         </activity>
         <activity
@@ -49,6 +44,21 @@
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".GameLoopActivity"
+            android:label="@string/check_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.intent.action.TEST_LOOP"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/javascript"/>
             </intent-filter>
         </activity>
     </application>
