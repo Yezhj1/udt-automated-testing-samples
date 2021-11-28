@@ -16,7 +16,11 @@ public class TestLoopHelper {
     private static final String ACTION_TEST_LOOP = "com.google.intent.action.TEST_LOOP";
     private static final String EXTRA_SCENARIO = "scenario";
 
-    // get game loop scenario
+    /**
+     * Get Game Loop Test scenario
+     * @param launchIntent
+     * @return
+     */
     public static int getScenario(Intent launchIntent) {
         if (launchIntent.getAction().equals(ACTION_TEST_LOOP)) {
             return launchIntent.getIntExtra(EXTRA_SCENARIO, 0);
@@ -24,7 +28,12 @@ public class TestLoopHelper {
         return -1;
     }
 
-    // run game loop
+    /**
+     * Run Game Loop Test
+     * @param context
+     * @param launchIntent
+     * @return test result
+     */
     public static boolean startTest(Context context, Intent launchIntent) {
         int scenario = getScenario(launchIntent);
         if (scenario < 0) {
