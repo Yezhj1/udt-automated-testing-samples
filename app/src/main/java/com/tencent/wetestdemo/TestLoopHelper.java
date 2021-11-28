@@ -1,6 +1,5 @@
 package com.tencent.wetestdemo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +16,7 @@ public class TestLoopHelper {
     private static final String ACTION_TEST_LOOP = "com.google.intent.action.TEST_LOOP";
     private static final String EXTRA_SCENARIO = "scenario";
 
+    // get game loop scenario
     public static int getScenario(Intent launchIntent) {
         if (launchIntent.getAction().equals(ACTION_TEST_LOOP)) {
             return launchIntent.getIntExtra(EXTRA_SCENARIO, 0);
@@ -24,6 +24,7 @@ public class TestLoopHelper {
         return -1;
     }
 
+    // run game loop
     public static boolean startTest(Context context, Intent launchIntent) {
         int scenario = getScenario(launchIntent);
         if (scenario < 0) {
@@ -42,6 +43,7 @@ public class TestLoopHelper {
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
+                Log.i(TAG, "appendLog, Exception: " + e);
             }
             appendLog(context, logFile,
                     activityName + ", loop " + i + " test on scenario: " + scenario);
@@ -64,8 +66,10 @@ public class TestLoopHelper {
             pfd.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Log.i(TAG, "appendLog, FileNotFoundException: " + e);
         } catch (IOException e) {
             e.printStackTrace();
+            Log.i(TAG, "appendLog,  IOException: " + e);
         }
     }
 }
