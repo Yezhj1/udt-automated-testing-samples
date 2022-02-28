@@ -1,6 +1,11 @@
 <resources>
-    <string name="app_name">masterdemo</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">Demo</string>
+    <string name="title_home">主页</string>
+    <string name="title_dashboard">用户中心</string>
+    <string name="title_notifications">活动</string>
+
+    <string name="tips_welcome">欢迎登陆</string>
+    <string name="prompt_username">用户名:</string>
+    <string name="prompt_password">密码:</string>
+    <string name="login_name">登陆</string>
 </resources>
