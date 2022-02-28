@@ -34,7 +34,8 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_margin="@dimen/activity_common_item_margin"
+        android:layout_marginStart="@dimen/activity_common_item_margin"
+        android:layout_marginEnd="@dimen/activity_common_item_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView

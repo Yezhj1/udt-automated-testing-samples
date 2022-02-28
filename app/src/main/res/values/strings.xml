@@ -8,4 +8,17 @@
     <string name="prompt_username">用户名:</string>
     <string name="prompt_password">密码:</string>
     <string name="login_name">登陆</string>
+
+    <string name="fragment_home_news_title">最新动态</string>
+    <string name="fragment_home_news_item1">年度回顾</string>
+    <string name="fragment_home_news_times1">2022/02/20</string>
+    <string name="fragment_home_news_item2">系统更新公告</string>
+    <string name="fragment_home_news_times2">2022/02/16</string>
+    <string name="fragment_home_news_item3">设备更新公告</string>
+    <string name="fragment_home_news_times3">2022/01/16</string>
+    <string name="fragment_home_news_item4">功能更新公告</string>
+    <string name="fragment_home_news_times4">2022/01/10</string>
+    <string name="fragment_home_news_item5">最新活动公告</string>
+    <string name="fragment_home_news_times5">2022/01/03</string>
+
 </resources>

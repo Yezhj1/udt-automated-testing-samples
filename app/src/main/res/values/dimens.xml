@@ -6,4 +6,5 @@
     <dimen name="activity_common_item_margin">32dp</dimen>
 
     <dimen name="text_min_with">50dp</dimen>
+
 </resources>
