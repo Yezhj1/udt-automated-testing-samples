@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tencent.bugly.Bugly
+import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.masterdemo.ui.dashboard.DashboardFragment
 import com.tencent.masterdemo.ui.dashboard.NewsFragment
 import com.tencent.masterdemo.ui.home.HomeFragment
@@ -29,9 +31,18 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val app = applicationContext
+        Bugly.init(app, "a51a0d4bb3", false)
+        Bugly.setAppChannel(app, "channel-test-crash")
+        Bugly.setUserId(app, "test-crash-001")
+
+        CrashReport.closeCrashReport()
+        CrashReport.closeNativeReport()
+
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnNavigationItemSelectedListener(selectedListener)
         initFragments()

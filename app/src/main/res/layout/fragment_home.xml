@@ -27,6 +27,8 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_common_divider_margin"
+        android:layout_marginEnd="@dimen/activity_common_divider_margin"
         android:background="@drawable/horizontal_divider" />
 
     <androidx.recyclerview.widget.RecyclerView

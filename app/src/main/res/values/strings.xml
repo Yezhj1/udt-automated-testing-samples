@@ -21,4 +21,23 @@
     <string name="fragment_home_news_item5">最新活动公告</string>
     <string name="fragment_home_news_times5">2022/01/03</string>
 
+    <string name="fragment_dashboard_title">个人资料</string>
+    <string name="fragment_dashboard_name">昵称:</string>
+    <string name="fragment_dashboard_name_value">test</string>
+    <string name="fragment_dashboard_phone">手机号:</string>
+    <string name="fragment_dashboard_phone_value">17121568934</string>
+    <string name="fragment_dashboard_email">邮箱:</string>
+    <string name="fragment_dashboard_email_edit">修改</string>
+    <string name="fragment_dashboard_email_value">352648523@qq.com</string>
+    <string name="fragment_dashboard_qq">QQ:</string>
+    <string name="fragment_dashboard_qq_value">374165234</string>
+    <string name="fragment_dashboard_wx">微信:</string>
+    <string name="fragment_dashboard_wx_value">test5555</string>
+    <string name="fragment_dashboard_submit">提交反馈</string>
+    <string name="fragment_dashboard_contact">联系客服</string>
+    <string name="fragment_dashboard_website">前往官网</string>
+
+    <string name="fragment_dashboard_email_edit_dialog_title">修改邮箱</string>
+    <string name="fragment_dashboard_email_edit_dialog_info">新的邮箱地址:</string>
+
 </resources>
