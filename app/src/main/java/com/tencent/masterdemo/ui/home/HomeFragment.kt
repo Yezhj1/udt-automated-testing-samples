@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tencent.masterdemo.BlackActivity
 import com.tencent.masterdemo.R
+import com.tencent.masterdemo.ui.home.news.NewsAdapter
 
 class HomeFragment : Fragment(), View.OnClickListener {
     private var adapter: NewsAdapter? = null

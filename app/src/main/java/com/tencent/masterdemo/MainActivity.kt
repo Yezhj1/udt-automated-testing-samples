@@ -11,21 +11,21 @@ import com.tencent.masterdemo.ui.dashboard.NewsFragment
 import com.tencent.masterdemo.ui.home.HomeFragment
 import com.tencent.masterdemo.ui.notifications.NotificationsFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OperateInterface {
     private lateinit var fragments: Array<Fragment>
 
-    private var currentFragmentIndex = 0
+    private var currentFragmentIndex = FragmentHelper.INDEX_HOME
 
     private val selectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         val i = item.itemId
         if (i == R.id.navigation_home) {
-            switchCurrentFragment(0)
+            switchCurrentFragment(FragmentHelper.INDEX_HOME)
             return@OnNavigationItemSelectedListener true
         } else if (i == R.id.navigation_notifications) {
-            switchCurrentFragment(1)
+            switchCurrentFragment(FragmentHelper.INDEX_NOTIFICATION)
             return@OnNavigationItemSelectedListener true
         } else if (i == R.id.navigation_dashboard) {
-            switchCurrentFragment(2)
+            switchCurrentFragment(FragmentHelper.INDEX_DASHBOARD)
             return@OnNavigationItemSelectedListener true
         }
         false
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         fragments = arrayOf(homeFragment, notificationsFragment,
             dashboardFragment, newsFragment)
 
-        currentFragmentIndex = 0
+        currentFragmentIndex = FragmentHelper.INDEX_HOME
 
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, homeFragment).hide(homeFragment)
@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity() {
             .add(R.id.fragment_container, newsFragment).hide(newsFragment)
             .show(homeFragment)
             .commit()
+
+        FragmentHelper.operInterface = this
     }
 
     private fun switchCurrentFragment(index: Int) {
@@ -79,5 +81,9 @@ class MainActivity : AppCompatActivity() {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.hide(fragments[lastIndex])
         transaction.show(fragments[index]).commitAllowingStateLoss()
+    }
+
+    override fun switchFragment(id: Int) {
+        this.switchCurrentFragment(id)
     }
 }

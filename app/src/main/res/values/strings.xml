@@ -12,6 +12,7 @@
     <string name="fragment_home_news_title">最新动态</string>
     <string name="fragment_home_news_item1">年度回顾</string>
     <string name="fragment_home_news_times1">2022/02/20</string>
+    <string name="fragment_home_news_content1">test123123124123.</string>
     <string name="fragment_home_news_item2">系统更新公告</string>
     <string name="fragment_home_news_times2">2022/02/16</string>
     <string name="fragment_home_news_item3">设备更新公告</string>

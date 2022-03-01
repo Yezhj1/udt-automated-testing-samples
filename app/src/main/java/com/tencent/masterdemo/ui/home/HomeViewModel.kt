@@ -2,6 +2,8 @@ package com.tencent.masterdemo.ui.home
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.masterdemo.FragmentHelper
 import com.tencent.masterdemo.R
 
 open class HomeViewModel : ViewModel() {
@@ -22,8 +24,25 @@ open class HomeViewModel : ViewModel() {
         return deviceItem
     }
 
-    fun onViewClick(title: String) {
+    fun onViewClick(context: Context, title: String) {
+        when(title) {
+            context.getString(R.string.fragment_home_news_item1) -> {
+                FragmentHelper.update(context.getString(R.string.fragment_home_news_item1),
+                    context.getString(R.string.fragment_home_news_times1), false)
+                FragmentHelper.switch(FragmentHelper.INDEX_NEW)
+            }
+            context.getString(R.string.fragment_home_news_item2) -> {
+                CrashReport.testNativeCrash()
+            }
+            context.getString(R.string.fragment_home_news_item3) -> {
 
+            }
+            context.getString(R.string.fragment_home_news_item4) -> {
+                FragmentHelper.update(context.getString(R.string.fragment_home_news_item4),
+                    context.getString(R.string.fragment_home_news_times4), true)
+                FragmentHelper.switch(FragmentHelper.INDEX_NEW)
+            }
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.tencent.masterdemo.ui.home
+package com.tencent.masterdemo.ui.home.news
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.tencent.masterdemo.R
+import com.tencent.masterdemo.ui.home.HomeViewModel
 
 class NewsAdapter(context: Context) :
         RecyclerView.Adapter<NewsAdapter.CheckItemViewHolder>(),
@@ -41,8 +42,8 @@ class NewsAdapter(context: Context) :
 
     override fun onClick(v: View?) {
         if (v != null) {
-
-
+            val holder = CheckItemViewHolder(v)
+            model?.onViewClick(context, holder.checkItemTitleTextView.text as String)
         }
     }
 
