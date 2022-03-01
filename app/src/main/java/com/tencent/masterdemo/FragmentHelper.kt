@@ -2,8 +2,8 @@ package com.tencent.masterdemo
 
 object FragmentHelper {
     const val INDEX_HOME = 0
-    const val INDEX_DASHBOARD = 1
-    const val INDEX_NOTIFICATION = 2
+    const val INDEX_NOTIFICATION = 1
+    const val INDEX_DASHBOARD = 2
     const val INDEX_NEW = 3
 
     var operInterface : OperateInterface? = null

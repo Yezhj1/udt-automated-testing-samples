@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.tencent.masterdemo.ui.dashboard.NewsFragment"
+        android:name="com.tencent.masterdemo.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 

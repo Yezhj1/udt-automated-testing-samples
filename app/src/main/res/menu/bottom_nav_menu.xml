@@ -19,6 +19,5 @@
     <item
         android:id="@+id/navigation_news"
         android:visible="false"
-        android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/fragment_home_news_title" />
 </menu>

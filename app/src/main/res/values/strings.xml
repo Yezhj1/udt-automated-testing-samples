@@ -41,4 +41,6 @@
     <string name="fragment_dashboard_email_edit_dialog_title">修改邮箱</string>
     <string name="fragment_dashboard_email_edit_dialog_info">新的邮箱地址:</string>
 
+    <string name="fragment_notification_pre">上一张</string>
+    <string name="fragment_notification_next">下一张</string>
 </resources>

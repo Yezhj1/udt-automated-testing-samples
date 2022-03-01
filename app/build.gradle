@@ -55,4 +55,6 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 
     implementation 'com.afollestad.material-dialogs:input:3.3.0'
+
+    implementation 'com.github.bingoogolapple:BGABanner-Android:v3.0.0'
 }
