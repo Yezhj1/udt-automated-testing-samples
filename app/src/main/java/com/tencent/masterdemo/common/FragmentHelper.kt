@@ -1,4 +1,4 @@
-package com.tencent.masterdemo
+package com.tencent.masterdemo.common
 
 object FragmentHelper {
     const val INDEX_HOME = 0

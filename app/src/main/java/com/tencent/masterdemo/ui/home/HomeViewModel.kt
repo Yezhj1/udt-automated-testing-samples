@@ -3,7 +3,7 @@ package com.tencent.masterdemo.ui.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.tencent.bugly.crashreport.CrashReport
-import com.tencent.masterdemo.FragmentHelper
+import com.tencent.masterdemo.common.FragmentHelper
 import com.tencent.masterdemo.R
 
 open class HomeViewModel : ViewModel() {

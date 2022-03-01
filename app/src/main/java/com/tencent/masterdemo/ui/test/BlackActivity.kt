@@ -1,4 +1,4 @@
-package com.tencent.masterdemo
+package com.tencent.masterdemo.ui.test
 
 import android.app.Activity
 import android.app.ActionBar
@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.tencent.masterdemo.R
 
 
 class BlackActivity : AppCompatActivity() {

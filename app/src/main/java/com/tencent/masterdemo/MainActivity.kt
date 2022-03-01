@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tencent.bugly.Bugly
 import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.masterdemo.common.FragmentHelper
+import com.tencent.masterdemo.common.OperateInterface
 import com.tencent.masterdemo.ui.dashboard.DashboardFragment
 import com.tencent.masterdemo.ui.dashboard.NewsFragment
 import com.tencent.masterdemo.ui.home.HomeFragment

@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".BlackActivity"
+            android:name=".ui.test.BlackActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Masterdemo.NoActionBar"
             android:exported="true">

@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.tencent.masterdemo.FragmentHelper
-import com.tencent.masterdemo.OperateNewsInterface
+import com.tencent.masterdemo.common.FragmentHelper
+import com.tencent.masterdemo.common.OperateNewsInterface
 import com.tencent.masterdemo.R
 
 class NewsFragment : Fragment(), OperateNewsInterface {
