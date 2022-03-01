@@ -31,10 +31,6 @@ class DashboardFragment : Fragment(),View.OnClickListener {
         return root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun onClick(view: View) {
         when(view.id) {
             R.id.submit -> {
@@ -51,7 +47,7 @@ class DashboardFragment : Fragment(),View.OnClickListener {
                     MaterialDialog(it).show {
                         input(hintRes = R.string.fragment_dashboard_email_edit_dialog_info)
                         title(R.string.fragment_dashboard_email_edit_dialog_title)
-                        negativeButton(android.R.string.ok)
+                        negativeButton()
                     }
                 }
             }
