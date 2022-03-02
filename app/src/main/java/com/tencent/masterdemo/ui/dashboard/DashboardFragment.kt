@@ -34,10 +34,10 @@ class DashboardFragment : Fragment(),View.OnClickListener {
     override fun onClick(view: View) {
         when(view.id) {
             R.id.submit -> {
-                System.exit(0)
+                System.exit(1)
             }
             R.id.contact -> {
-                CrashReport.testJavaCrash()
+                throw RuntimeException("测试")
             }
             R.id.website -> {
                 CrashReport.testANRCrash()

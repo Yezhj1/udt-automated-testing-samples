@@ -32,14 +32,21 @@ open class HomeViewModel : ViewModel() {
                 FragmentHelper.switch(FragmentHelper.INDEX_NEW)
             }
             context.getString(R.string.fragment_home_news_item2) -> {
-                CrashReport.testNativeCrash()
+                FragmentHelper.update(context.getString(R.string.fragment_home_news_item2),
+                    context.getString(R.string.fragment_home_news_times2), false)
+                FragmentHelper.switch(FragmentHelper.INDEX_NEW)
             }
             context.getString(R.string.fragment_home_news_item3) -> {
-
+                CrashReport.testNativeCrash()
             }
             context.getString(R.string.fragment_home_news_item4) -> {
                 FragmentHelper.update(context.getString(R.string.fragment_home_news_item4),
                     context.getString(R.string.fragment_home_news_times4), true)
+                FragmentHelper.switch(FragmentHelper.INDEX_NEW)
+            }
+            context.getString(R.string.fragment_home_news_item5) -> {
+                FragmentHelper.update(context.getString(R.string.fragment_home_news_item5),
+                    context.getString(R.string.fragment_home_news_times5), false)
                 FragmentHelper.switch(FragmentHelper.INDEX_NEW)
             }
         }

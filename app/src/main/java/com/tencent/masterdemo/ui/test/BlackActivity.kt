@@ -19,11 +19,7 @@ class BlackActivity : AppCompatActivity() {
         statusBarHide(this)
     }
 
-    /**
-     * 设置Activity的statusBar隐藏
-     * @param activity
-     */
-    fun statusBarHide(activity: Activity) {
+    private fun statusBarHide(activity: Activity) {
         // 代表 5.0 及以上
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val decorView: View = activity.window.decorView
@@ -36,7 +32,8 @@ class BlackActivity : AppCompatActivity() {
         }
 
         // versionCode > 4.4  and versionCode < 5.0
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+            && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
     }
