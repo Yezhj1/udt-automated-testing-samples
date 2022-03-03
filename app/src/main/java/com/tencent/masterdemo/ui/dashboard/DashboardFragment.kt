@@ -11,6 +11,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.masterdemo.R
+import com.tencent.masterdemo.common.FragmentHelper
 
 class DashboardFragment : Fragment(),View.OnClickListener {
 

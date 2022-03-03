@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity(), OperateInterface {
         false
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val app = applicationContext
         Bugly.init(app, "a51a0d4bb3", false)
         Bugly.setAppChannel(app, "channel-test-crash")
