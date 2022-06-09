@@ -7,3 +7,4 @@ local.properties
 app/debug/
 app/release/
 app/proguardMapping.txt
+.DS_Store
