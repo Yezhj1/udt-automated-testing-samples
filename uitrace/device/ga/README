@@ -1,0 +1,6 @@
+GA Android：
+1.去除uiautomator：wpyscripts/manager.py get_engine ui_device = uiauto.get_uiautomator() -> ui_device = None
+2.不要import tools，否则会初始化uia和minitouch
+
+GA iOS：
+1.ga/GAutomatorIOS/ga2/engine/UE4Engine.py添加get_element_bound函数

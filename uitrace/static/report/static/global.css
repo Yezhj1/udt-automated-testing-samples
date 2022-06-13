@@ -1,0 +1,57 @@
+* {
+    padding: 0;
+    margin: 0;
+    outline: none;
+    box-sizing: border-box;
+    font-family : Microsoft Yahei,Helvetica Neue,Helvetica,Arial,PingFang SC,Hiragino Sans GB,WenQuanYi Micro Hei,sans-serif
+  }
+  html, body{
+    height: 100%;
+    background-color: #fff;
+    padding-right: 0!important;
+    overflow: auto;
+    color: #333333;
+  }
+  
+  a {
+    color: #3c8dbc;
+    text-decoration: none;
+  }
+  
+  -webkit-scrollbar {
+    width: 4px;
+    background-color: #F5F5F5;
+  }
+  
+  -webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+  }
+  
+  -webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #3e8dbb;
+  }
+  
+  .el-table td {
+    height: 36px;
+    padding: 0;
+  }
+  
+  .el-tabs__item {
+    font-weight: 400;
+  }
+  .el-table th>.cell {
+    font-weight: 400;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  .el-message--error,
+  .el-message--success,
+  .el-message--warning,
+  .el-message-box__wrapper {
+    z-index: 99999!important;
+  }
+  

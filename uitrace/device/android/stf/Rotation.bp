@@ -1,0 +1,54 @@
+import threading
+import time
+import os
+from uitrace.utils.env import DeviceEnv
+from uitrace.device.android.dev_mgr import AndroidMgr
+
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+ROTATION_PATH = os.path.join(cur_dir, "stf", "rotationwatcher", "RotationWatcher.apk")
+
+
+class Rotation:
+    def __init__(self):
+        self.rotation = 0
+        self.rotation_thread = None
+        self.notice_func = None
+
+        DeviceEnv.dev_mgr = AndroidMgr()
+        self.dev_mgr = DeviceEnv.dev_mgr
+
+        package_name = 'jp.co.cyberagent.stf.rotationwatcher'
+        apk_list = self.dev_mgr.cmd_adb("shell pm list packages").communicate()[0].strip()
+        if package_name not in str(apk_list, encoding= 'utf8'):
+            self.setup()
+
+    def setup(self):
+        self.dev_mgr.cmd_adb("install -r "+ROTATION_PATH).communicate()
+
+    def run_rotation(self):
+        apk_path = self.dev_mgr.cmd_adb("shell pm path jp.co.cyberagent.stf.rotationwatcher").communicate()[0].strip()
+        apk_path = str(apk_path,encoding='utf8')
+        apk_path = apk_path.strip().split(':')[-1]
+        rotation_cmd = "shell CLASSPATH=" + apk_path + " app_process /system/bin jp.co.cyberagent.stf.rotationwatcher.RotationWatcher"
+        rotation = self.dev_mgr.cmd_adb(rotation_cmd)
+
+        while True:
+            self.rotation = int(rotation.stdout.readline().strip())
+            if callable(self.notice_func):
+                self.notice_func()
+
+    def start(self, notice_func = None):
+        self.notice_func = notice_func
+        self.rotation_thread = threading.Thread(target=self.run_rotation)
+        self.rotation_thread.setDaemon(True)
+        self.rotation_thread.start()
+
+    def get_rotation(self):
+        return self.rotation
+
+r = Rotation()
+r.start()
+while True:
+    print(r.get_rotation())
+    time.sleep(0.5)

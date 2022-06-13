@@ -1,0 +1,396 @@
+import struct
+import json
+import time
+import requests
+import cv2 as cv
+import numpy as np
+import tornado.gen
+from tornado.web import Application, RequestHandler
+from tornado.ioloop import IOLoop
+from tornado.httpserver import HTTPServer
+from tornado.websocket import WebSocketHandler
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
+from uitrace.utils.log_handler import get_logger
+
+
+logger = get_logger()
+
+
+class DriverEnv:
+    driver = None
+    run_state = True
+    ga_driver = None
+
+
+def img2bytes(img):
+    result, img_bytes = cv.imencode(".jpg", img)
+    img_bytes = np.array(img_bytes).tobytes()
+    return img_bytes
+
+
+def bytes2img(img_bytes):
+    img = np.frombuffer(img_bytes, dtype=np.uint8)
+    img = cv.imdecode(img, cv.IMREAD_COLOR)
+    return img
+
+
+class ExecTest(RequestHandler):
+    def get(self):
+        pos = self.get_argument("pos")
+        pos = json.loads(pos)
+        print(pos)
+        res = {
+            "cmd": "exec_test"
+        }
+        # time.sleep(60)
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class StreamTest(WebSocketHandler):
+    executor = ThreadPoolExecutor(4)
+
+    @tornado.gen.coroutine
+    def on_message(self, message):
+        # ifs = self.get_argument("ifs", default=0.05)
+        # ifs = float(message)
+        img = cv.imread("./data/test.jpg")
+        while DriverEnv.run_state:
+            if img is not None:
+                self.write_message(img2bytes(img), binary=True)
+                # time.sleep(0.05)
+                yield self.wait_time()
+
+    @run_on_executor
+    def wait_time(self):
+        time.sleep(0.03)
+        return True
+
+    def check_origin(self, origin):
+        return True  # 允许WebSocket的跨域请求
+
+
+class ScreenshotTest(RequestHandler):
+    def get(self):
+        for i in range(5):
+            img = cv.imread("./data/test.jpg")
+            if img is not None:
+                self.write(img2bytes(img))
+                break
+            time.sleep(0.2)
+
+
+class StreamHandler(WebSocketHandler):
+    executor = ThreadPoolExecutor(4)
+
+    @tornado.gen.coroutine
+    def on_message(self, message):
+        # ifs = self.get_argument("ifs", default=0.05)
+        DriverEnv.run_state = True
+        self.ifs = float(message)
+        while DriverEnv.run_state:
+            img = DriverEnv.driver.get_img()
+            if img is not None:
+                # self.write_message(base64.b64encode(cv.imencode(".jpg", img)[1]))
+                self.write_message(img2bytes(img), binary=True)
+                # time.sleep(0.05)
+                yield self.wait_time()
+
+    @run_on_executor
+    def wait_time(self):
+        time.sleep(self.ifs)
+        return True
+
+    def check_origin(self, origin):
+        return True  # 允许WebSocket的跨域请求
+
+
+class StopStreamHandler(RequestHandler):
+    def get(self):
+        DriverEnv.run_state = False
+        res = {
+            "cmd": "stop_stream"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class ScreenshotHandler(RequestHandler):
+    def get(self):
+        for i in range(5):
+            img = DriverEnv.driver.get_img()
+            if img is not None:
+                self.write(img2bytes(img))
+                break
+            time.sleep(0.2)
+
+
+class ClickHandler(RequestHandler):
+    def get(self):
+        params = {}
+        pos = self.get_argument("pos")
+        pos = json.loads(pos)
+        params["pos"] = pos
+        duration = self.get_argument("duration", default=None)
+        if duration:
+            params["duration"] = float(duration)
+
+        DriverEnv.driver.click_pos(**params)
+        res = {
+            "cmd": "click"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class SlideHandler(RequestHandler):
+    def get(self):
+        params = {}
+        pos_from = self.get_argument("pos_from")
+        pos_from = json.loads(pos_from)
+        params["pos_from"] = pos_from
+        pos_to = self.get_argument("pos_to")
+        pos_to = json.loads(pos_to)
+        params["pos_to"] = pos_to
+        duration = self.get_argument("duration", default=None)
+        if duration:
+            params["duration"] = float(duration)
+
+        DriverEnv.driver.slide_pos(**params)
+        res = {
+            "cmd": "slide"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class PressHandler(RequestHandler):
+    def get(self):
+        name = self.get_argument("name")
+        DriverEnv.driver.press(name)
+        res = {
+            "cmd": "press"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class TouchDownHandler(RequestHandler):
+    def get(self):
+        params = {}
+        pos = self.get_argument("pos")
+        pos = json.loads(pos)
+        params["pos"] = pos
+        id = self.get_argument("id", default=None)
+        if id:
+            params["id"] = int(id)
+        pressure = self.get_argument("pressure", default=None)
+        if pressure:
+            params["pressure"] = int(pressure)
+
+        DriverEnv.driver.touch_down(**params)
+        res = {
+            "cmd": "touch_down"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class TouchMoveHandler(RequestHandler):
+    def get(self):
+        params = {}
+        pos = self.get_argument("pos")
+        pos = json.loads(pos)
+        params["pos"] = pos
+        id = self.get_argument("id", default=None)
+        if id:
+            params["id"] = int(id)
+        pressure = self.get_argument("pressure", default=None)
+        if pressure:
+            params["pressure"] = int(pressure)
+
+        DriverEnv.driver.touch_move(**params)
+        res = {
+            "cmd": "touch_move"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class TouchUpHandler(RequestHandler):
+    def get(self):
+        params = {}
+        id = self.get_argument("id", default=None)
+        if id:
+            params["id"] = int(id)
+        pressure = self.get_argument("pressure", default=None)
+        if pressure:
+            params["pressure"] = int(pressure)
+
+        DriverEnv.driver.touch_up(**params)
+        res = {
+            "cmd": "touch_up"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class TouchResetHandler(RequestHandler):
+    def get(self):
+        DriverEnv.driver.touch_reset()
+        res = {
+            "cmd": "touch_reset"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class UITreeHandler(RequestHandler):
+    def get(self):
+        uuid = self.get_argument("uuid", default="")
+        uitree_data = DriverEnv.driver.get_uitree()
+        res = {
+            "cmd": "uitree",
+            "uuid": uuid,
+            "result": uitree_data
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class InputTextHandler(RequestHandler):
+    def get(self):
+        text = self.get_argument("text")
+        DriverEnv.driver.input_text(None, text)
+        res = {
+            "cmd": "input_text"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class CurrentAppHandler(RequestHandler):
+    def get(self):
+        app = DriverEnv.driver.current_app()
+        res = {
+            "cmd": "current_app",
+            "result": app
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class StartGAHandler(RequestHandler):
+    def init_ga(self, os_type, engine_type):
+        try:
+            if DriverEnv.ga_driver is not None:
+                DriverEnv.ga_driver.stop_driver()
+                DriverEnv.ga_driver = None
+            from uitrace.device.ga.ga_mgr import GADriver
+            from uitrace.utils.toolkit import get_free_ports
+            DriverEnv.ga_driver = GADriver()
+            port = get_free_ports(1)[0]
+            DriverEnv.ga_driver.start_driver(port=port, os_type=os_type, engine_type=engine_type)
+            return True
+        except Exception:
+            logger.exception("init ga error")
+            if DriverEnv.ga_driver is not None:
+                DriverEnv.ga_driver.stop_driver()
+                DriverEnv.ga_driver = None
+            return False
+
+    def get(self):
+        os_type = int(self.get_argument("os_type"))
+        engine_type = int(self.get_argument("engine_type"))
+        result = self.init_ga(os_type, engine_type)
+        res = {
+            "cmd": "start_ga",
+            "result": result
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class GATreeHandler(RequestHandler):
+    def get(self):
+        uuid = self.get_argument("uuid", default="")
+        result = None
+        try:
+            result = DriverEnv.ga_driver.get_uitree()
+        except Exception:
+            logger.exception("request error")
+        res = {
+            "cmd": "ga_tree",
+            "uuid": uuid,
+            "result": result
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class StopGAHandler(RequestHandler):
+    def get(self):
+        result = DriverEnv.ga_driver.stop_driver()
+        DriverEnv.ga_driver = None
+        res = {
+            "cmd": "stop_ga"
+        }
+        self.write(json.dumps(res).encode("utf-8"))
+
+
+class DriverSvr:
+    def __init__(self):
+        self.port = None
+
+    def set_driver(self, driver):
+        DriverEnv.driver = driver
+
+    def start_svr(self, port=8400):
+        self.port = port
+        app = Application(
+            [
+                (r"/st", StreamTest),
+                (r"/et", ExecTest),
+                (r"/ss", ScreenshotTest),
+                (r"/stream", StreamHandler),
+                (r"/stop_stream", StopStreamHandler),
+                (r"/screenshot", ScreenshotHandler),
+                (r"/click", ClickHandler),
+                (r"/slide", SlideHandler),
+                (r"/press", PressHandler),
+                (r"/touch_down", TouchDownHandler),
+                (r"/touch_move", TouchMoveHandler),
+                (r"/touch_up", TouchUpHandler),
+                (r"/touch_reset", TouchResetHandler),
+                (r"/uitree", UITreeHandler),
+                (r"/input_text", InputTextHandler),
+                (r"/current_app", CurrentAppHandler),
+                (r"/start_ga", StartGAHandler),
+                (r"/ga_tree", GATreeHandler),
+                (r"/stop_ga", StopGAHandler)
+            ]
+        )
+
+        http_svr = HTTPServer(app)
+        http_svr.bind(self.port)
+        http_svr.start()
+        IOLoop.current().start()
+
+
+class DriverClient:
+    def __init__(self, ip="127.0.0.1", port=8400):
+        self.ip = ip
+        self.port = port
+        self.url = "http://%s:%s" % (ip, port)
+
+    def connect(self):
+        pass
+
+    def get_img(self):
+        try:
+            frame_bytes = requests.get(self.url + "/screenshot").content
+            img = bytes2img(frame_bytes)
+            return img
+        except Exception:
+            logger.exception("get frame failed")
+            return None
+        return None
+
+    def click(self, pos, duration=0.05):
+        cmd = {"pos": str(pos), "duration": str(duration)}
+        res = requests.get(self.url + "/click", params=cmd)
+
+    def slide(self, pos_from, pos_to, duration=0.05):
+        cmd = {"pos_from": str(pos_from), "pos_to": str(pos_to), "duration": str(duration)}
+        res = requests.get(self.url + "/slide", params=cmd)
+
+    def get_uitree(self):
+        res = requests.get(self.url + "/uitree")
+        return res.json()["result"]

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UITrace</title>
+    <!-- cdn引入ElementUI样式 -->
+    <link rel="stylesheet" href="./static/elementui/index.css">
+    <link rel="stylesheet" type="text/css" href="./static/global.css">
+    <link rel="stylesheet" type="text/css" href="./static/index.css">
+    <link rel="stylesheet" href="./static/viewer/viewer.css">
+    <style>
+        .el-tooltip__popper{
+            max-width: 600px !important;
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            word-break: break-all !important;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <div class="header-content">
+            <img src="./static/images/header.png" width="160" height="25">
+            <div class="header-title">自动化测试报告</div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="details-info">
+            <template v-if="false">
+                <!-- ios -->
+                <div class="details-info-left" v-if="Test_result.result">
+                    <i class="el-icon-success success-icon"></i>
+                    <span>通过</span>
+                </div>
+                <div class="details-info-left" v-if="Test_result">
+                    <i class="el-icon-warning error-icon"></i>
+                    <span>异常</span>
+                </div>
+            </template>
+            <div class="details-info-middle">
+                <template v-if="false">
+                    <!-- 安卓 -->
+                    <div>测试工具: {{Test_result.tool}}</div>
+                    <div>模式: {{getMode}} <span v-if="Ai_monkey.action.length !== 0"> + 智能探索</span></div>
+                    <div>场景数: {{Test_result.sceneCount}}
+                        <span style="margin-left: 20px;">操作数: {{Test_result.operateCount + Ai_monkey.action.length}}</span>
+                        <span style="margin-left: 20px;">用户标记数: {{Test_result.nodeReport}}</span>
+                    </div>
+                    <div>执行时间: {{getTime}}   <span style="margin-left: 20px;">执行时长: {{getTimeLong}}</span></div>
+                </template>
+                <template v-if="true">
+                    <!-- ios -->
+                    <div>测试工具: {{Test_result.tool}}</div>
+                    <div>模式: 代码模式</div>
+                    <div>
+                        <span>操作数: {{ Operate_list.length }}</span>
+                    </div>
+                    <div>执行时间: {{Operate_list[0].dateTime}}   <span style="margin-left: 20px;">执行时长: {{getTimeLongIos}}</span></div>
+                </template>
+                
+            </div>
+            <div>
+                <div class="details-info-right" v-if="Ai_monkey.action.length !== 0">
+                    <div style="text-align: center;">智能探索</div>
+                    <div><span>页面数： </span><span> {{Ai_monkey_page}} </span></div>
+                    <div><span>操作数： </span><span>{{Ai_monkey.action.length}}</span></div>
+                    <div><span>重启次数： </span><span>{{Ai_monkey_restart}}</span></div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 5px;">
+            <div class="device-info">
+                <div class="device-info-title">设备信息</div>
+                <div class="device-info-bottom">
+                    <div><i class="el-icon-mobile-phone" style="font-size: 30px;color:rgba(147, 151, 162)"></i></div>
+                    <div class="device-info-detail">
+                        <template v-if="!is_IOS">
+                            <!-- 安卓版 -->
+                            <div>品牌: Apple <span style="margin-left: 8px;"></span>型号: {{DeviceInfo.MarketName ? DeviceInfo.MarketName : '-'}}</div>
+                            <div>系统: {{DeviceInfo.ProductVersion ? DeviceInfo.ProductVersion : '-'}} {{DeviceInfo.osversion ? DeviceInfo.osversion : '-'}}</div>
+                            <div>分辨率: {{resolvingPower ? resolvingPower : '-'}}</div>
+                        </template>
+                        <template v-else>
+                            <!-- ios -->
+                            <div>品牌: Apple <span style="margin-left: 8px;"></span>型号: {{DeviceInfo.MarketName ? DeviceInfo.MarketName : '-'}}</div>
+                            <div>系统: {{DeviceInfo.ProductVersion ? DeviceInfo.ProductVersion : '-'}}</div>
+                            <div>设备名: {{DeviceInfo.DeviceName ? DeviceInfo.DeviceName : '-'}}</div>
+                            <div>设备ID: {{DeviceInfo.UniqueDeviceID ? DeviceInfo.UniqueDeviceID : '-'}}</div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="select-button">
+                <div v-if="Scene_list.length !== 0" class="common-selectbutton" :class="buttonType === 'scene' ? 'active-selectbutton' : ''" @click="clickButton('scene')">场景视图</div>
+                <div class="common-selectbutton" :class="buttonType === 'process' ? 'active-selectbutton' : ''" @click="clickButton('process')">流程视图</div>
+                <div v-if="Ai_monkey.action.length !== 0" class="common-selectbutton" :class="buttonType === 'intelligent' ? 'active-selectbutton' : ''" @click="clickButton('intelligent')">智能探索</div>
+                <div class="common-selectbutton" :class="buttonType === 'report' ? 'active-selectbutton' : ''" @click="clickButton('report')">日志</div>
+            </div>
+            <!-- 操作 -->
+            <div class="img-title" v-if="showImgTitle">
+                <div ><span v-if="buttonType === 'scene'">场景</span></div>
+                <div><span v-if="buttonType !== 'intelligent'">操作截图</span><span v-else>页面</span></div>
+                <div class="img-title-operation">
+                    <div style="text-align: center;margin-right: 20px;">
+                        <el-button v-if="buttonType === 'intelligent'" size="mini" @click="clickMerge">{{isMerge ? '页面还原' : '页面聚合'}}</el-button>
+                    </div>
+                    <div style="text-align: center;margin-right: 20px;">
+                        <el-button v-if="buttonType === 'intelligent'" size="mini" @click="goToRestart">跳转到重启页</el-button>
+                    </div>
+                    <div style="font-size: 20px;width: 100px;">
+                        <i class="el-icon-refresh-left icon-refresh" @click="rotateCap('left')"></i>
+                        <i class="el-icon-refresh-right icon-refresh" @click="rotateCap('right')"></i>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <!-- 场景视图 -->
+                <div v-if="buttonType === 'scene'" class="scene-view">
+                    <div class="scene-left">
+                        <div class="scene-left-container">
+                            <div class="scene-item" :class="sceneActive === index ? 'scene-item-active' : ''" v-for="(item,index) of Scene_list" :key="item + index" @click="changeScene(index, item)">
+                                <div class="scene-item-index">{{index + 1}}</div>
+                                <div class="scene-item-name">{{item.name}}</div>
+                            </div>
+                        </div>
+                        <div class="scene-page">
+                            <el-pagination
+                                @current-change="handleCurrentChange"
+                                background
+                                layout="prev, pager, next"
+                                :total="Scene_list.length">
+                            </el-pagination>
+                        </div>
+                    </div>
+                    <div class="scene-right" id="viewer">
+                        <div class="scene-img-item" v-for="(item,index) of scene_list_right" :key="item + index" @click="sceneClick(item,index)">
+                            <!-- <div class="scene-img-sign" :style="getScenePositon()"></div> -->
+                            <img :src="item.img" alt="加载失败" class="scene-img" :class="{sceneClickBorder: sceneIndex === index}">
+                            <div class="scene-img-text">
+                                <div class="scene-text">{{item.showTime}}</div>
+                                <div class="scene-text">{{item.img_name}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 流程视图 -->
+                <div v-if="buttonType === 'process'" class="process-view" id="viewer">
+                    <div class="process-img-item" v-for="(item,index) of Operate_list" :key="item + index" @click="processClick(item,index)">
+                        <!-- <div class="process-img-sign" :class="`process-img-sign-${index}`" :style="getProcessPositon(item,index)"></div> -->
+                        <img :src="item.img" alt="加载失败" class="process-img" :class="{processClickBorder: processIndex === index}">
+                        <div class="process-img-text">
+                            <div class="process-text">{{item.showTime}}</div>
+                            <div class="process-text">{{item.img_name}}</div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <!-- 智能探索 -->
+                <div v-if="buttonType === 'intelligent'" class="intelligent-view">
+                    <div class="intelligent-page">
+                        <div v-for="(item,index) of Ai_monkey_pageList" :key="item + index" @click="intelligentClick(item,index)" class="intelligent-page-item ">
+                            <el-tooltip effect="dark" :disabled="item.action !== 'restart'" :content="typeof(item.action_info) === 'string' ? item.action_info : ''" placement="top" >
+                                <img :src="'monkey/' + item.img_name + '.jpg'" alt="加载失败" class="intelligent-smallImg" :class="{ intelligentClickBorder : activeIndex === index, intelligentRestartBorder : item.action === 'restart'}">
+                            </el-tooltip>
+                            <div class="intelligent-smallimg-text">
+                                <div class="intelligent-text" :title="item.img_name">{{item.time}}</div>
+                                <div class="intelligent-text" :title="item.img_name">{{item.img_name}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="intelligent-clickPage" id="viewer">
+                        <div class="intelligent-clickPage-item" v-for="(item,index) of Ai_monkey_pageListDetails" :key="item + index"  @click="intelligentBigImgClick(item,index)">
+                            <img :src="'monkey/' + item.img_name + '.jpg'" alt="加载失败" class="intelligent-bigImg" :class="{ intelligentBigImgClickBorder : intelligentBigImgIndex === index}">
+                            <div class="intelligent-bigImg-text">
+                                <div class="bigImg-text">{{item.time}}</div>
+                                <div class="bigImg-text">{{item.img_name}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 日志 -->
+                <div v-if="buttonType === 'report'" class="report-view">
+                    <div class="report-search">
+                        <el-input
+                            style="width: 200px;"
+                            placeholder="请输入路径/内容"
+                            v-model="content"
+                            clearable
+                            size="small"
+                            @input="inputChange">
+                        </el-input>
+                    </div>
+                    <div class="report-table">
+                        <el-table
+                            height="420"
+                            :data="tableData"
+                            style="width: 100%">
+                            <el-table-column width=200 prop="time" label="时间" align="center"/>
+                            </el-table-column>
+                            <el-table-column width=100 prop="level" label="级别" align="center"/>
+                            </el-table-column>
+                            <el-table-column prop="path" label="路径" align="center" show-overflow-tooltip/>
+                            </el-table-column>
+                            <el-table-column prop="msg" label="内容" align="left" show-overflow-tooltip/>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<!--cdn引入ElementUI组件必须先引入Vue-->
+<script src="./static/vue/vue.js"></script>
+<!-- cdn引入ElementUI组件库 -->
+<script src="./static/elementui/index.js"></script>
+<!-- <script src="./static/test-result.js"></script> -->
+<script src="./static/report_record.js"></script>
+<script src="./static/device_info.js"></script>
+<script src="./static/log.js"></script>
+<!-- <script src="./static/operate-list.js"></script> -->
+<!-- <script src="./static/scene-list.js"></script> -->
+<!-- <script src="./static/ai-monkey.js"></script> -->
+<script src="./static/viewer/viewer.js"></script>
+<script type="text/javascript">
+    function prefixInteger(num, length) {
+        return (Array(length).join('0') + num).slice(-length);
+    }
+    let pattern = /^(?<time>[\s\S]+) - (?<level>[\s\S]+) - (?<file>[\s\S]+) - (?<text>[\s\S]+)$/
+    let loggers = []
+    try{
+        loggers = window.logger.split("\n")
+    }catch { }
+    window.logger = []
+    for (let i = 0; i < loggers.length; i++) {
+        let match = pattern.exec(loggers[i])
+        if(match) logger.push(match.groups)
+        else if(logger.length > 0){
+            logger[logger.length - 1]["text"] += `\n${loggers[i]}`
+        }
+    }
+    const vm = new Vue({ // 配置对象 options
+        // 配置选项(option)
+        el: '#app',  // element: 指定用vue来管理页面中的哪个标签区域
+        data() {
+            return {
+                buttonType: 'scene',
+                currentPage: 1,
+                sceneActive: 0,
+                content: '',
+                sceneImgCurrent: 0,
+                vivwer: null,
+                tableData: [],
+                Ai_monkey_pageListDetails: [],
+                isMerge: false,
+                sceneIndex: -1,
+                processIndex: -1,
+                activeIndex: -1,
+                intelligentBigImgIndex: -1,
+                scene_list_right: [],
+                options: {
+                    button: true,
+                    navbar: false,
+                    title: false,
+                    toolbar: true,
+                    tooltip: true,
+                    movable: true,
+                    zoomable: true,
+                    rotatable: true,
+                    scalable: true,
+                    transition: true,
+                    fullscreen: true,
+                    keyboard: true,
+                },
+            }
+        },
+        computed: {
+            // 产生的报告类型是否是ios
+            is_IOS() {
+                return true;
+            },
+            // 测试结果
+            Test_result() {
+                if (typeof test_result !== 'undefined') {
+                    return test_result;
+                } else {
+                    // ios版
+                    return {
+                        endTime: null,
+                        exceptionInfo: "",
+                        exceptionScreenCap: "",
+                        mode: null,
+                        operateCount: 1,
+                        result: false,
+                        sceneCount: 1,
+                        startTime: null,
+                        tool: "WeAutomator",
+                    };
+                }
+            },
+            getMode () {
+                if (this.Test_result.mode) {
+                    const mode = this.Test_result.mode;
+                    if (mode === 'scene') return '场景模式';
+                    if (mode === 'script') return '代码模式';
+                } 
+                return '代码模式';
+            },
+            getTime() {
+                if (this.Test_result.startTime) {
+                    const date=new Date(parseInt(this.Test_result.startTime)* 1000);
+                    const year=date.getFullYear();
+                    const mon = date.getMonth()+1;
+                    const day = date.getDate();
+                    return year +'/'+ mon+'/'+ day ;
+                }
+                return '-'
+            },
+            getTimeLong() {
+                try {
+                    let totalS=parseInt(this.Test_result.endTime - this.Test_result.startTime);
+                    let hours = parseInt(totalS/3600)
+                    let minu = parseInt((totalS-(hours*3600))/60)
+                    let sec = parseInt(totalS-(hours*3600) - (minu*60))
+                    return hours +'小时' + minu + '分' + sec + '秒';
+                } catch (error) {
+                    return "-"
+                }
+            },
+            getTimeLongIos() {
+                try {
+                    let totalS=parseInt(report_record[report_record.length-1].time - report_record[0].time);
+                    let hours = parseInt(totalS/3600)
+                    let minu = parseInt((totalS-(hours*3600))/60)
+                    let sec = parseInt(totalS-(hours*3600) - (minu*60))
+                    return hours +'小时' + minu + '分' + sec + '秒';
+                } catch (e) {
+                    console.log(e);
+                    return "-"
+                }
+            },
+            // 智能探索
+            Ai_monkey() {
+                if (typeof ai_monkey !== 'undefined') {
+                    let data = JSON.parse(JSON.stringify(ai_monkey));
+                    data.action.forEach(item => {
+                        const date=new Date(parseInt(item.time)* 1000);
+                        item.time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(); //获取时分秒
+                        item.showBorder = false;
+                        if(item.action === 'restart') {
+                            item.scene = 'restart';
+                        }
+                    })
+                    return data;
+                } else {
+                    return {
+                        action: [],
+                        count: {},
+                        fatal: [],
+                    };
+                }
+            },
+            Ai_monkey_pageList() {
+                if(this.Ai_monkey.action.length === 0) return [];
+                if(this.isMerge) {
+                    // 数据源合并
+                    const result = [];
+                    const data = [];
+                    this.Ai_monkey.action.forEach(item => {
+                        if(!result.includes(item.scene)) {
+                            result.push(item.scene);
+                            data.push({
+                                action: item.action,
+                                scene: item.scene,
+                                time: item.time,
+                                img_name: item.img_name,
+                                action_info: item.action_info ? item.action_info : '',
+                                children: this.mergeChildren(item.scene),
+                            });
+                        }
+                    })
+                    return data;
+                } else {
+                    // 数据源分块
+                    const data = [];
+                    let scene = '';
+                    this.Ai_monkey.action.forEach((item, index) => {
+                        if(scene !== item.scene) {
+                            scene = item.scene;
+                            data.push({
+                                action: item.action,
+                                scene: item.scene,
+                                time: item.time,
+                                img_name: item.img_name,
+                                action_info: item.action_info ? item.action_info : '',
+                                children: [],
+                            })
+                        }
+                        if (scene === item.scene) {
+                            data[data.length - 1].children.push(item);
+                        }
+                    })
+                    return data;
+                }
+
+            },
+            Ai_monkey_page() {
+                if(this.Ai_monkey.action.length === 0) return 0;
+                const result = [];
+                this.Ai_monkey.action.forEach(item => {
+                    if(!result.includes(item.scene) && item.scene) {
+                        result.push(item.scene);
+                    }
+                })
+                return result.length;
+            },
+            Ai_monkey_restart() {
+                if(this.Ai_monkey.action.length === 0) return 0;
+                const result = [];
+                this.Ai_monkey.action.forEach(item => {
+                    if(item.action === 'restart') {
+                        result.push(item);
+                    }
+                })
+                return result.length;
+            },
+            // 设备信息
+            DeviceInfo() {
+                if (typeof device_info !== 'undefined') {
+                    return device_info;
+                } else {
+                    return {
+                        brand: '-',
+                        id: '',
+                        model: '-',
+                        name: '-',
+                        osversion: '-',
+                        platform: '-',
+                        resolution: '-',
+                    };
+                }
+            },
+            // 场景视图
+            Scene_list() {
+                if (typeof scene_list !== 'undefined') {
+                    const now = 10 * (this.currentPage - 1);
+                    const next = 10 * this.currentPage;
+                    return scene_list.slice(now, next);
+                } else {
+                    this.buttonType = 'process';
+                    return [];
+                }
+            },
+            // 流程视图
+            Operate_list() {
+                if (typeof report_record !== 'undefined') {
+                    let data = [];
+                    report_record.forEach(item => {
+                        data.push({
+                            img: `./screenshot${item.img.match(/screenshot(\S*)/)[1]}`,
+                            img_name: item.func,
+                            op_time: item.time,
+                            time: item.time,
+                        })
+                    })
+                    if (typeof ai_monkey !== 'undefined') {
+                        data = [...data,...ai_monkey.action]
+                    }
+                    // 排序
+                    data.sort((a,b)=>{
+                        return a.time - b.time;
+
+                    })
+                    // 获取时分秒 + 修改img路径
+                    data.forEach(item => {
+                        const date=new Date(parseInt(item.time)* 1000);
+                        item.showTime = prefixInteger(date.getHours(), 2) + ':' + prefixInteger(date.getMinutes(), 2) + ':' + prefixInteger(date.getSeconds(), 2); //获取时分秒
+                        item.dateTime = date.getFullYear() + '-' +  (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-' + date.getDate() + ' ' + item.showTime; //获取日期
+                        if (!item.img) {
+                            item.img = 'monkey/' + item.img_name + '.jpg';
+                        }
+                    })
+
+                    // console.log('流程视图改造后的数据', data);
+                    return data;
+                } else {
+                    return [];
+                }
+            },
+            // 日志
+            Logger() {
+                if (typeof logger !== 'undefined') {
+                    return logger;
+                } else {
+                    return [];
+                }
+            },
+            showImgTitle() {
+                if (this.buttonType === 'report') {
+                    return false;
+                }
+                return true;
+            },
+            resolvingPower () {
+                try {
+                    const data = this.DeviceInfo.resolution;
+                    if (data === '-') {
+                        return '-'
+                    }
+                    const result = data.substring(1, data.length - 1).split(',');
+                    return `${result[0]} * ${result[1]}`;
+                } catch (e) {
+                    console.log(e);
+                }
+                
+            },
+        },
+        mounted() {
+            // console.log('Ai_monkey',this.Ai_monkey);
+            this.getSceneFristData();
+            this.tableData = this.Logger;
+            this.$nextTick(()=> {
+                this.viewer = new Viewer(document.getElementById('viewer'), this.options);
+            })
+            
+        },
+        watch: {
+            buttonType: {
+                deep: true,
+                handler() {
+                    this.sceneImgCurrent = 0;
+                    this.sceneIndex = -1,
+                    this.processIndex = -1,
+                    this.activeIndex = -1,
+                    this.intelligentBigImgIndex = -1,
+                    this.$nextTick(()=> {
+                        this.viewer.destroy();
+                        if(document.getElementById('viewer')) {
+                            this.viewer = new Viewer(document.getElementById('viewer'), this.options);
+                        }
+                    })
+                },
+            }
+        },
+        methods: {
+            clickButton(val) {
+                this.buttonType = val;
+            },
+            getSceneFristData() {
+                if (this.Scene_list.length === 0) return;
+                const firstData = this.Scene_list[0];
+                this.getSceneRightData(firstData);
+            },
+            changeScene(val, item) {
+                this.sceneIndex = -1;
+                this.sceneActive = val;
+                this.sceneImgCurrent = 0;
+                this.reductionImgRotate('.scene-img');
+                this.reductionImgRotate('.scene-img-text', false);
+                this.getSceneRightData(item);
+            },
+            getSceneRightData(item) {
+                const endTime = item.endTime;
+                const startTime = item.startTime;
+                let data = [];
+                const originData = this.Operate_list;
+                if (originData.length === 0) {
+                    this.scene_list_right = [];
+                } else {
+                    if (endTime === 0) {
+                        data = originData.filter(child => child.time >= startTime)
+                    } else {
+                        data = originData.filter(child => child.time >= startTime && child.time <= endTime)
+                    }
+                }
+                this.scene_list_right = data;
+            },
+            // 封装图片旋转
+            getRotateType(className, marginLeft, marginTop, isRotate = true ) {
+                const num = Math.abs(this.sceneImgCurrent);
+                document.querySelectorAll(className).forEach(item => {
+                    if(isRotate) {
+                        item.style.transform = `rotate(${this.sceneImgCurrent}deg)`;
+                    }
+                    if( (num/90)%2 === 0) {
+                        item.style.marginLeft = 0;
+                        item.style.marginTop = 0;
+                    } else {
+                        item.style.marginLeft = marginLeft;
+                        item.style.marginTop = marginTop;
+                    }
+                });
+            },
+            // 图片文字旋转还原
+            reductionImgRotate(className, isRotate = true) {
+                document.querySelectorAll(className).forEach(item => {
+                    if(isRotate) {
+                        item.style.transform = `rotate(0deg)`;
+                    }
+                    item.style.marginLeft = 0;
+                    item.style.marginTop = 0;
+                });
+            },
+            // 图片翻转
+            rotateCap(val) {
+                if(val === 'left') {
+			        this.sceneImgCurrent = (this.sceneImgCurrent - 90);
+                } else {
+			        this.sceneImgCurrent = (this.sceneImgCurrent + 90);
+                }
+                if(this.buttonType === 'scene') {
+                    this.getRotateType('.scene-img', '160px', '-66px');
+                    this.getRotateType('.scene-img-text', '180px', '-66px', false);
+                } else if(this.buttonType === 'process') {
+                    this.getRotateType('.process-img', '180px', '100px');
+                    this.getRotateType('.process-img-text', '180px', '50px', false);
+                } else if(this.buttonType === 'intelligent') {
+                    this.getRotateType('.intelligent-smallImg', '80px', '-20px');
+                    this.getRotateType('.intelligent-smallimg-text', '80px', '-20px', false);
+                    this.getRotateType('.intelligent-bigImg', '100px', '-66px');
+                    this.getRotateType('.intelligent-bigImg-text', '100px', '-66px', false);
+                }
+            },
+            
+            inputChange(val) {
+                if(val !== '') {
+                    const result = [];
+                    this.Logger.forEach(item => {
+                        if(item.msg.indexOf(val) != -1 || item.path.indexOf(val) != -1 ) {
+                            result.push(item)
+                        }
+                    })
+                    this.tableData = result;
+                } else {
+                    this.tableData = this.Logger;
+                }
+                
+            },
+            // 页面聚合
+            clickMerge() {
+                this.isMerge = !this.isMerge;
+            },
+            // 跳转到重启页
+            goToRestart() {
+                if(this.Ai_monkey.action.length === 0) return;
+                const filter = this.Ai_monkey_pageList.filter((item, index) => item.scene === 'restart' && index > this.activeIndex);
+                if (filter.length === 0) {
+                    this.activeIndex = -1;
+                }
+                for(let i = 0; i<this.Ai_monkey_pageList.length; i++) {
+                    if (this.Ai_monkey_pageList[i].scene === 'restart' && i > this.activeIndex) {
+                        this.activeIndex = i;
+                        this.Ai_monkey_pageListDetails = this.Ai_monkey_pageList[i].children;
+                        break;
+                    }
+                }
+                this.$nextTick(()=> {
+                    const left = document.querySelector('.intelligentClickBorder').offsetLeft - 850;
+                    document.querySelector('.intelligent-page').scrollLeft = left;
+                })
+                
+            },
+            // 合并得智能探索数据
+            mergeChildren(scene) {
+                const child = [];
+                this.Ai_monkey.action.forEach(item => {
+                    if(item.scene === scene) {
+                        child.push(item);
+                    }
+                })
+                return child;
+            },
+            // 场景视图
+            sceneClick() {
+                this.sceneIndex = index;
+            },
+             // 流程点击
+            processClick (item, index) {
+                this.processIndex = index;
+            },
+            // 智能探索点击
+            intelligentClick(item, index) {
+                this.intelligentBigImgIndex = -1,
+                this.activeIndex = index;
+                this.Ai_monkey_pageListDetails = item.children;
+                this.$nextTick(()=> {
+                    this.getRotateType('.intelligent-bigImg', '100px', '-66px');
+                    this.getRotateType('.intelligent-bigImg-text', '100px', '-66px', false);
+                })
+                this.$nextTick(()=> {
+                    this.viewer.destroy();
+                    if(document.getElementById('viewer')) {
+                        this.viewer = new Viewer(document.getElementById('viewer'), this.options);
+                    }
+                })
+            },
+            // 智能探索大图点击
+            intelligentBigImgClick(item, index) {
+                this.intelligentBigImgIndex = index;
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+            }
+        },
+    })
+</script>
+</body>
+</html>
