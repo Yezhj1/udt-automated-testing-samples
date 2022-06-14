@@ -20,8 +20,7 @@ click([200, 200]) # 点击左面上的[200, 200]位置
 2.**stop_driver()** 在脚本运行结束后调用，释放相关驱动，并生成报告
 
 ### 测试结果
-<div align=left>
-<img src="..\resource\img\test1.png" width=300>
+![figure](https://github.com/Yezhj1/udt-automated-testing-samples/blob/main/resource/img/test1.png)
 
 
 
