@@ -1,0 +1,4 @@
+login = '//android.widget.LinearLayout[@resource-id="com.tencent.mobileqq:id/ac1"]/android.widget.Button[@text="登录" and @resource-id="com.tencent.mobileqq:id/btn_login"]'
+account = '//android.widget.RelativeLayout[@resource-id="com.tencent.mobileqq:id/dmm"]/android.widget.ImageView[@resource-id="com.tencent.mobileqq:id/login"]'
+password = '//android.widget.RelativeLayout[@resource-id="com.tencent.mobileqq:id/e4p"]/android.widget.EditText[@text="输入密码" and @resource-id="com.tencent.mobileqq:id/password"]'
+confirm = '//android.widget.RelativeLayout[@resource-id="com.tencent.mobileqq:id/input"]/android.widget.RelativeLayout[@resource-id="com.tencent.mobileqq:id/em2"]'
