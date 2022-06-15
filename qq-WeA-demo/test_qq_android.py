@@ -4,6 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from uitrace.api import *
 from Xpath import *
 import argparse
+from advanced.cvlib.slide_verify import slide_verify
 
 
 def arg():
@@ -25,7 +26,7 @@ def test_qq(arg):
     click(password, by=DriverType.UI, timeout=20)
     input_text(arg.password) # qq password
     click(confirm, by=DriverType.UI, timeout=20)
-
+    slide_verify('slider img')  # slide img path or slide img (str or ndarray)
     stop_driver()
 
 
