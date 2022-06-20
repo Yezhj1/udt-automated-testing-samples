@@ -22,9 +22,9 @@ def test_qq(arg):
               clear_app=True, clear_account=False)
     click(login, by=DriverType.UI, timeout=20)
     click(account, by=DriverType.UI, timeout=20)
-    input_text(arg.qq) # input a qq number
+    input_text(arg.qq)  # input a qq number
     click(password, by=DriverType.UI, timeout=20)
-    input_text(arg.password) # qq password
+    input_text(arg.password)  # qq password
     click(confirm, by=DriverType.UI, timeout=20)
     slide_verify('slider img')  # slide img path or slide img (str or ndarray)
     stop_driver()
